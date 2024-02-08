@@ -39,3 +39,5 @@ router.delete('/user/:index', (req, res) => {
         res.status(404).json({ error: "id de l'utilisateur invalide" });
     }
 });
+
+module.exports = router
