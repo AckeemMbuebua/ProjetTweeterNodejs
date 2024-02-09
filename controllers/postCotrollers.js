@@ -21,8 +21,9 @@ function addTweet(req, res) {
 }
 
 function deleteTweet(req, res) {
-    const index = req.params.index;
-    if (index >= 0 && index < tweets.length) {
+    const id = Number(req.params.id);
+    const index = tweets.findIndex(tweets => tweets.userId === id);
+    if (index !== -1) {
         const deletedTweet = tweets.splice(index, 1);
         res.json({ message: 'Tweet supprimé avec succès', tweet: deletedTweet });
     } else {
@@ -33,8 +34,25 @@ function deleteTweet(req, res) {
 function showTweets(req, res) {
     res.json(tweets);
 }
+
+function updatedTweet(req, res) {
+    const tweetId = Number(req.params.id);
+    const updatedTweet = req.body;
+
+    // Recherche du tweet par son ID
+    const tweetIndex = tweets.findIndex(tweets => tweets.userId === tweetId);
+    if (tweetIndex !== -1) {
+
+        tweets[tweetIndex] = updatedTweet;
+        res.send('Tweet mis à jour avec succès');
+    } else {
+        res.status(404).send('Tweet non trouvé');
+        res.json({ message: 'Modification', tweets: tweetIndex });
+    }
+}
 module.exports = {
     addTweet,
     showTweets,
-    deleteTweet
+    deleteTweet,
+    updatedTweet
 }

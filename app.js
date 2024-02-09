@@ -1,9 +1,9 @@
 const express = require("express")
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.use(express.json());
 
-const routeTweets = require('./routes/routeTweets')
+const routeTweets = require('./routes/routeTweets');
 const routesUsers = require('./routes/routesUser');
 
 app.use('/tweets', routeTweets);
