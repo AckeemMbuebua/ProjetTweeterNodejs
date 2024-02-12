@@ -1,7 +1,7 @@
 
 let tweets = [];
 function addTweet(req, res) {
-    const { userId, id, title, body, url, thumbnailUrl, like, repost } = req.body;
+    const { userId, id, title, body, url, thumbnailUrl, like = null, repost = null } = req.body;
     if (userId && userId) {
         const newTweet = {
             userId: userId,
@@ -50,9 +50,33 @@ function updatedTweet(req, res) {
         res.json({ message: 'Modification', tweets: tweetIndex });
     }
 }
+
+function liked(req, res) {
+    const id = Number(req.body.id);
+    const tweetIndex = tweets.findIndex(tweets => tweets.userId === id);
+    const tweetLike = tweets[tweetIndex].like;
+    // const tweetLike = tweets[id].like;
+    if (tweetIndex !== -1) {
+        if (tweetLike.like == null) {
+            tweets[tweetIndex].like = true;
+            res.json(tweets[tweetIndex]);
+        } else {
+            tweets[tweetIndex].like = false;
+            res.json({ message: 'Like modifier', tweet: tweets[tweetIndex] });
+        }
+    } else {
+        res.status(404).send('id introuvable');
+        // res.json({ message: 'Modification', tweets: tweetIndex });
+    }
+}
+
+function retweets(req, res) {
+
+}
 module.exports = {
     addTweet,
     showTweets,
     deleteTweet,
-    updatedTweet
+    updatedTweet,
+    liked
 }
