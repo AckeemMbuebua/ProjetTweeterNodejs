@@ -52,12 +52,13 @@ function updatedTweet(req, res) {
 }
 
 function liked(req, res) {
-    const id = Number(req.body.id);
-    const tweetIndex = tweets.findIndex(tweets => tweets.userId === id);
-    const tweetLike = tweets[tweetIndex].like;
-    // const tweetLike = tweets[id].like;
-    if (tweetIndex !== -1) {
-        if (tweetLike.like == null) {
+    const idPost = Number(req.body.idPost);
+    // const tweetIndex = tweets.findIndex(tweets => tweets.userId === tweetId);
+    const indexPost = tweets.findIndex(tweets => tweets.userId === idPost);
+    const tweetIndex = tweets.findIndex(tweets => tweets.userId === idPost);
+
+    if (indexPost !== -1) {
+        if (tweetLike[tweetIndex].like == null) {
             tweets[tweetIndex].like = true;
             res.json(tweets[tweetIndex]);
         } else {

@@ -6,5 +6,5 @@ router.get('/', showTweets);
 router.post('/', addTweet);
 router.delete('/:id', deleteTweet);
 router.patch('/:id', updatedTweet);
-router.put('/:id', liked);
+router.get('/liked/:idPost', liked);
 module.exports = router;
