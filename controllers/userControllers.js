@@ -1,22 +1,41 @@
 const jwt = require('jsonwebtoken');
 const { privateKey, publicKey } = require('../model/otherfunctions');
 
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
+async function main() {
+    const users = await prisma.users.findMany();
+    console.log(users);
+}
+
+main();
+
+
+
 const users = [];
 function createUser(req, res) {
-    const { id, name, username, email, profil, thumbnailProfil, password } = req.body;
-    const Joined = Date.now();
-    if (id && name && email && password) {
-        const newUser = {
-            id: id,
-            name: name,
-            username: username,
-            email: email,
-            profil: profil,
-            thumbnailProfil: thumbnailProfil,
-            password: password,
-            Joined: Joined
-        };
-        users.push(newUser);
+    const { name, username, email, profil, thumbnailProfil, password } = req.body;
+    // const Joined = '';
+    if (name && email && password) {
+        async function add() {
+            const user = await prisma.users.create({
+                data: {
+                    name: name,
+                    username: username,
+                    email: email,
+                    profil: profil,
+                    thumbnailProfil: thumbnailProfil,
+                    password: String(password)
+                    // joined: Joined
+                }
+            });
+            console.log(user);
+        }
+
+        add();
+        users.push(add);
         const token = jwt.sign({ email }, privateKey, { algorithm: 'RS256' })
         res.status(201).json({
             message: 'Inscription réalisée avec succès',
