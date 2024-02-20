@@ -1,19 +1,25 @@
 
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
 let tweets = [];
 function addTweet(req, res) {
-    const { userId, id, title, body, url, thumbnailUrl, like = null, repost = null } = req.body;
-    if (userId && userId) {
-        const newTweet = {
-            userId: userId,
-            id: id,
-            title: title,
-            body: body,
-            url: url,
-            thumbnailUrl: thumbnailUrl,
-            like: like,
-            repost: repost
-        };
-        tweets.push(newTweet);
+    const { idUser, title, body, image } = req.body;
+    if (idUser && body) {
+        async function addTwt() {
+            const tweets = await prisma.tweets.create({
+                data: {
+                    idUser: idUser,
+                    title: title,
+                    body: body,
+                    image: image
+                }
+            });
+            console.log(tweets);
+        }
+        addTwt();
+        tweets.push(tweets);
         res.status(201).json({ message: 'Tweet ajouté avec succès' });
     } else {
         res.status(400).json({ error: 'Données incomplètes' });
@@ -31,11 +37,28 @@ function deleteTweet(req, res) {
     }
 }
 
-function showTweets(req, res) {
-    res.json(tweets);
+async function showTweets(req, res) {
+    const allTweets = await prisma.tweets.findMany();
+    res.json(allTweets);
+    console.log(allTweets);
 }
 
-function updatedTweet(req, res) {
+async function updatedTweet(req, res) {
+
+    const { name, username, profil, thumbnailProfil } = req.body
+    const updateTweets = await prisma.tweets.update({
+        where: {
+            email: email,
+        },
+        data: {
+            name: name,
+            username: username,
+            profil: profil,
+            thumbnailProfil: thumbnailProfil
+        }
+    })
+
+
     const tweetId = Number(req.params.id);
     const updatedTweet = req.body;
 

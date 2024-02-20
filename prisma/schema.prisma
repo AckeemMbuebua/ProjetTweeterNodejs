@@ -11,29 +11,36 @@ datasource db {
 }
 
 model Users {
-  id              Int      @id @default(autoincrement())
-  name            String?
-  username        String?
-  email           String   @unique
-  profil          String
-  thumbnailProfil String
-  password        String
-  joined          DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  username   String
+  email      String   @unique
+  bio        String?
+  profil_url String?
+  cover_url  String?
+  password   String
+  joined     DateTime @default(now())
 }
 
 model Tweets {
   id         Int      @id @default(autoincrement())
-  title      String
-  body       String
-  like       Etat     @default(null)
-  repost     Etat     @default(null)
+  idUser     Int
+  content    String?
+  image_url  String?
   created_at DateTime @default(now())
   update_at  DateTime @default(now())
-  idUser     Int
 }
 
-enum Etat {
-  null
-  true
-  false
+model Like {
+  id         Int     @id @default(autoincrement())
+  idUser     Int
+  idPost     Int
+  count_like String?
+}
+
+model Retweet {
+  id            Int     @id @default(autoincrement())
+  idUser        Int
+  idPost        Int
+  count_retweet String?
 }

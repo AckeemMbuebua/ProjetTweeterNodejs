@@ -1,48 +1,48 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { privateKey, publicKey } = require('../model/otherfunctions');
 
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-async function main() {
-    const users = await prisma.users.findMany();
-    console.log(users);
-}
-
-main();
-
-
-
 const users = [];
-function createUser(req, res) {
+async function createUser(req, res) {
     const { name, username, email, profil, thumbnailProfil, password } = req.body;
-    // const Joined = '';
-    if (name && email && password) {
-        async function add() {
-            const user = await prisma.users.create({
-                data: {
-                    name: name,
-                    username: username,
-                    email: email,
-                    profil: profil,
-                    thumbnailProfil: thumbnailProfil,
-                    password: String(password)
-                    // joined: Joined
-                }
-            });
-            console.log(user);
-        }
 
-        add();
-        users.push(add);
-        const token = jwt.sign({ email }, privateKey, { algorithm: 'RS256' })
-        res.status(201).json({
-            message: 'Inscription réalisée avec succès',
-            err: "Votre jeton est: " + token
-        });
+    const Emailuser = await prisma.users.findUnique({
+        where: {
+            email: email
+        }
+    })
+    if (name && email && password) {
+        bcrypt.hash(String(password), 5, function (err, bcryptPassword) {
+            if (!Emailuser) {
+                async function add() {
+                    const user = await prisma.users.create({
+                        data: {
+                            name: name,
+                            username: username,
+                            email: email,
+                            profil: profil,
+                            thumbnailProfil: thumbnailProfil,
+                            password: bcryptPassword
+                        }
+                    });
+                }
+                add();
+                const token = jwt.sign({ email }, privateKey, { algorithm: 'RS256' })
+                res.status(201).json({
+                    message: 'Inscription réalisée avec succès',
+                    err: "Votre jeton est: " + token
+                });
+            } else {
+                res.status(400).json({ error: 'utilisateur existant' });
+            }
+        })
+
     } else {
-        res.status(400).json({ error: 'Données incomplètes' });
+        res.status(400).json({ error: 'Données incomplètes, remplissez tous les champs' });
     }
 }
 
@@ -69,18 +69,21 @@ function deletedUser(req, res) {
     }
 }
 
-function showUsers(req, res) {
-    res.send(req.userToken);
+async function showUsers(req, res) {
+    const users = await prisma.users.findMany();
+    res.send(users);
+    // res.send(req.userToken);
 }
 
-function loginUsers(req, res) {
+async function loginUsers(req, res) {
     const { email, password } = req.body;
+    const users = await prisma.users.findMany();
     const verifed = users.some((users) => users.email == email && users.password === password)
     const token = jwt.sign({ email }, privateKey, { algorithm: 'RS256' })
     if (verifed) {
         res.send(token)
     } else {
-        res.status(404).send("Utilisateur inconnu")
+        res.status(404).json("Utilisateur inconnu")
     }
 }
 
